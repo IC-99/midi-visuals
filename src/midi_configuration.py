@@ -19,3 +19,5 @@ while True:
             if rec[0][0] == 144 or rec[0][0] == 128:
                 create = not create
                 print(create)
+                if create:
+                    print(rec[0])
