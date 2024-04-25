@@ -33,7 +33,7 @@ while True:
     # handle commands
     for i in range(len(controller.commands)):
         if controller.commands[i]:
-            visual.draw(frame, i, controller.velocities[i], controller.colors[i])
+            visual.draw(frame, [i, controller.velocities[i], controller.colors[i]])
 
     # add the frame to the video
     video.write(frame)

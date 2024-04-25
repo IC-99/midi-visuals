@@ -40,7 +40,8 @@ class Squares_and_circles:
         cv2.rectangle(frame, self.p1_square2, self.p2_square2, (255, 255, 255), -1)
 
     # draw a circle by command
-    def draw(self, frame, command, velocity, color):
+    def draw(self, frame, data):
+        command, velocity, color = data
         r, g, b = color
         r = int(r * velocity / 127)
         g = int(g * velocity / 127)
@@ -67,7 +68,8 @@ class Image_shift:
         frame[y_offset : y_offset + overlay_h, x_offset : x_offset + overlay_w] = self.background_image[:, :, :3]
 
     # draw an image by command
-    def draw(self, frame, command):
+    def draw(self, frame, data):
+        command = data[0]
         image = self.images[command % len(self.images)]
         overlay_h, overlay_w, _ = image.shape
         x_offset = (self.video_width - overlay_w) // 2
