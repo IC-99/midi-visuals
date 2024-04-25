@@ -1,26 +1,20 @@
 import cv2
 import numpy as np
-import pygame.midi as midi
 import random
+from controller import midi_controller
 
-# get the MIDI input device
-midi.init()
-try:
-    input = midi.Input(midi.get_default_input_id(), 256)
-except:
-    pass
+
+buffer_size = 256
 
 # screen dimensions
 video_width = 1920
 video_height = 1080
 
+# get the MIDI input device
+controller = midi_controller(buffer_size)
+
 # initialize the video
 video = cv2.VideoWriter('recordings/output.mov', cv2.VideoWriter_fourcc(*'XVID'), 30, (video_width, video_height))
-
-# initialize command arrays
-commands = [False] * 61
-velocities = [0] * 61
-colors = [(0, 0, 0)] * 61
 
 # compute the objects locations
 square_size = 600
@@ -57,35 +51,21 @@ p_circle18 = (p1_square2[0] + circle_gap * 5, p1_square1[1] + circle_gap * 5)
 # aggregate all the circles in one list
 circles = [p_circle1, p_circle2, p_circle3, p_circle4, p_circle5, p_circle6, p_circle7, p_circle8, p_circle9, p_circle10, p_circle11, p_circle12, p_circle13, p_circle14, p_circle15, p_circle16, p_circle17, p_circle18]
 
-def get_random_color():
-    return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+
 
 # draw a circle by command
 def draw_circle(command):
-    r, g, b = colors[command]
-    r = int(r * velocities[command] / 127)
-    g = int(g * velocities[command] / 127)
-    b = int(b * velocities[command] / 127)
+    r, g, b = controller.colors[command]
+    r = int(r * controller.velocities[command] / 127)
+    g = int(g * controller.velocities[command] / 127)
+    b = int(b * controller.velocities[command] / 127)
     cv2.circle(frame, circles[command % 18], circle_ray, (r, g, b), -1)
 
 # loop to generate each frame of the video
 while True:
 
     # read MIDI input if there is any
-    try:
-        if input.poll():
-            received = input.read(10)
-
-            for rec in received:
-                if rec[0][0] == 144 or rec[0][0] == 128:
-                    commands[rec[0][1] - 36] = not commands[rec[0][1] - 36]
-                    print(commands[:20])
-                    if commands[rec[0][1] - 36]:
-                        velocities[rec[0][1] - 36] = rec[0][2]
-                        colors[rec[0][1] - 36] = get_random_color()
-                        print(velocities[:20])
-    except:
-        pass
+    controller.read()
     
     # create a new empty frame
     frame = np.zeros((video_height, video_width, 3), dtype=np.uint8)
@@ -95,8 +75,8 @@ while True:
     cv2.rectangle(frame, p1_square2, p2_square2, (255, 255, 255), -1)
 
     # handle commands
-    for i in range(len(commands)):
-        if commands[i]:
+    for i in range(len(controller.commands)):
+        if controller.commands[i]:
             draw_circle(i)
 
     # add the frame to the video
