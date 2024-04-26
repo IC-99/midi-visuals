@@ -23,11 +23,12 @@ class Midi_controller:
                 received = self.midi_input.read(10)
                 for rec in received:
                     if rec[0][0] == 144 or rec[0][0] == 128:
-                        self.commands[rec[0][1] - 36] = not self.commands[rec[0][1] - 36]
+                        index = (rec[0][1] - 36) % len(self.commands)
+                        self.commands[index] = not self.commands[index]
                         #print(self.commands[:20])
-                        if self.commands[rec[0][1] - 36]:
-                            self.velocities[rec[0][1] - 36] = rec[0][2]
-                            self.colors[rec[0][1] - 36] = self.get_random_color()
+                        if self.commands[index]:
+                            self.velocities[index] = rec[0][2]
+                            self.colors[index] = self.get_random_color()
                             #print(self.velocities[:20])
         except Exception as e:
             print('errore:', e)
