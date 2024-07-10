@@ -17,13 +17,13 @@ video = cv2.VideoWriter('recordings/output.mov', cv2.VideoWriter_fourcc(*'XVID')
 
 # choose the visuals you want to draw
 #visual = Squares_and_circles(video_width, video_height)
-#visual = Image_shift(video_width, video_height)
-#visual = Bubble(video_width, video_height)
+visual = Image_shift(video_width, video_height)
+#visual = Bubble(video_width, video_height, 20)
 points = []
 for i in range(240, video_width, 240):
     for j in range(135, video_height, 135):
         points.append((i, j))
-visual = Bubbles(video_width, video_height, points, 10, 65, (255, 150, 150), 2)
+#visual = Bubbles(video_width, video_height, points, 10, 65, (255, 150, 150), 2)
 
 # loop to generate each frame of the video
 while True:
